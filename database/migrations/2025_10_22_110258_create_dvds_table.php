@@ -17,9 +17,13 @@ return new class extends Migration
          * id, title, director, year, timestamps
          */
         Schema::create('dvds', function (Blueprint $table) {
-
+            $table->id();
+            $table->timestamps();
+            $table->string('title');
+            $table->string('director');
+            $table->year('year');
         });
-    }
+    }   
 
     /**
      * Reverse the migrations.
