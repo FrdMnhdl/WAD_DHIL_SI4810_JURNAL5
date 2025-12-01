@@ -19,13 +19,20 @@ class AuthController extends Controller
          */
         $validator = Validator::make($request->all(), [
             // the request body are name, email and password
+            $request->validate([
+                'name'=>'required',
+                'email'=>'required|email|unique:users',
+                'password'=>'required|min:6',
+            ])
 
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                // message=>
+                // message=> 
+                'massage' => 'validation failed',
                 // errors=>
+                'errors' => $validator->errors()
 
             ], 422);
         }
@@ -35,10 +42,15 @@ class AuthController extends Controller
          * Create new user and generate API token
          */
         $user = User::create([
-1
+                $user = User::create([
+                'name'=>$request->name,
+                'email'=>$request->email,
+                'password'=>($request->password)
+            ])
         ]);
 
         // $token = ....
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         /**
          * =========3===========
@@ -48,7 +60,9 @@ class AuthController extends Controller
             'message' => 'Registration successful',
             'data' => [
                 // 'user' => ....,
+                'user' => $user,
                 // 'token' => ....
+                'token' => $token
             ]
         ], 201);
     }
@@ -64,6 +78,7 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Invalid login credentials'
             ], 401);
+            
         }
         /**
          * =========5===========
@@ -71,6 +86,12 @@ class AuthController extends Controller
          */
         // $user = ....
         // $token = ....
+         $user = Auth::user();
+
+        $token = $user->createToken(
+            'auth_token',
+            ['*'],
+        )->plainTextToken;
 
         /**
          * =========6===========
@@ -81,6 +102,8 @@ class AuthController extends Controller
             'data' => [
                 // 'user' => ....,
                 // 'token' => ....
+                'user' => $user,
+                'token' => $token 
             ]
         ], 200);
     }
@@ -91,6 +114,7 @@ class AuthController extends Controller
          * =========7===========
          * Revoke the token that was used to authenticate the current request
          */
+         $request->user()->currentAccessToken()->delete();
 
 
         /**
