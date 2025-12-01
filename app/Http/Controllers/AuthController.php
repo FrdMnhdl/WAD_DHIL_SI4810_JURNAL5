@@ -19,14 +19,15 @@ class AuthController extends Controller
          */
         $validator = Validator::make($request->all(), [
             // the request body are name, email and password
-
+            'name' => 'required|string',
+            'email' => 'required|string|unique:users',
+            'password' => 'required|string'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                // message=>
-                // errors=>
-
+                'message'=> 'Validation failed',
+                'errors' => $validator->errors()
             ], 422);
         }
 
@@ -35,10 +36,12 @@ class AuthController extends Controller
          * Create new user and generate API token
          */
         $user = User::create([
-1
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password)
         ]);
 
-        // $token = ....
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         /**
          * =========3===========
@@ -47,8 +50,8 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Registration successful',
             'data' => [
-                // 'user' => ....,
-                // 'token' => ....
+                'user' => $user,
+                'token' => $token
             ]
         ], 201);
     }
@@ -65,22 +68,24 @@ class AuthController extends Controller
                 'message' => 'Invalid login credentials'
             ], 401);
         }
+
+          
         /**
          * =========5===========
          * Generate API token for authenticated user
          */
-        // $user = ....
-        // $token = ....
+        $user = User::where('email', $request->email)->firstOrFail();
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         /**
          * =========6===========
          * Return success response with user data and token
          */
-        return response()->json([
-            'message' => 'Login successful',
+     return response()->json([
+            'message' => 'Registration successful',
             'data' => [
-                // 'user' => ....,
-                // 'token' => ....
+                'user' => $user,
+                'token' => $token
             ]
         ], 200);
     }
@@ -92,7 +97,7 @@ class AuthController extends Controller
          * Revoke the token that was used to authenticate the current request
          */
 
-
+        $request->user()->currentAccessToken()->delete();
         /**
          * =========8===========
          * Return success response
