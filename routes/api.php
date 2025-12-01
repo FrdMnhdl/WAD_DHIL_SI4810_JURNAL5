@@ -15,8 +15,8 @@ use App\Http\Controllers\AuthController;
  * =============1================
  * unprotected routes for user registration and login
  */
-
-
+route::post('/register', [AuthController::class, 'register']);
+route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     /**
@@ -54,6 +54,6 @@ Route::middleware('auth:sanctum')->group(function () {
      * ============9================
      * dvd audios API routes
      */
-
+    route::apiResource('dvdaudio', DvdaudioController::class);
 });
 
