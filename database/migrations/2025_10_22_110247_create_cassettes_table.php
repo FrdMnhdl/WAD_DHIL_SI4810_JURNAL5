@@ -17,7 +17,7 @@ return new class extends Migration
          * id, title, artist, year, timestamps
          */
         Schema::create('cassettes', function (Blueprint $table) {
-
+           
         });
     }
 

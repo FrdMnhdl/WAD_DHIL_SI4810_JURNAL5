@@ -13,8 +13,11 @@ class Dvd extends Model
      * Define the table name and its attributes/columns
      * the attributes are title, director, year
      */
+
     protected $table = 'dvds';
     protected $fillable = [
-
+        'title',
+        'director',
+        'year'
     ];
 }
