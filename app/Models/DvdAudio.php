@@ -15,7 +15,9 @@ class DvdAudio extends Model
      */
     protected $table = 'dvdaudios';
     protected $fillable = [
-
+        'title',
+        'artist',
+        'year'
     ];
 
 

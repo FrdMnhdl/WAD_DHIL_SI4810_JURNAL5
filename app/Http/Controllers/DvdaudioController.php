@@ -16,10 +16,10 @@ class DvdaudioController extends Controller
     public function index()
     {
         // ambil semua data dvdaudio
-        // $dvdaudios = ....
+        $dvdaudios = dvdaudio::all();
 
         // return koleksi dvdaudio
-        // return ....
+        return DvdaudioResource::collection($dvdaudios);
     }
 
     /**
@@ -30,22 +30,26 @@ class DvdaudioController extends Controller
     {
         // Request body berisi title, artist dan year
         $validator = Validator::make($request->all(), [
-            
+            'title' => 'required|string|max:225',
+            'artist' => 'nullable|string',
+            'year' => 'required|integer|min:0',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                // 'success' => false,
-                // 'errors' => ....
+                'success' => false,
+                'errors' => $validator->errors()
             ], 422);
         }
 
         // Buat data dvdaudio
-        // $dvdaudio = ....
+        $dvdaudio = dvdaudio::created($validator->validated());
 
         // return dvdaudio yang dibuat sebagai resource
-        // return ....
-
+        return (new DvdaudioResource($dvdaudio))
+                    ->additional(['messege' => 'DvdAudio created successfully'])
+                    ->response()
+                    ->setStatusCode(201);
     }
 
     /**
@@ -55,17 +59,17 @@ class DvdaudioController extends Controller
     public function show(string $id)
     {
         // Cari data dvdaudio berdasarkan ID
-        // $dvdaudio = ....
+        $dvdaudio = dvdaudio::find($id);
 
         if (!$dvdaudio) {
             return response()->json([
-                // 'success' => false,
-                // 'message' => ....
+                'success' => false,
+                'message' => 'Dvdaudio not found'
             ], 404);
         }
 
         // return dvdaudio sebagai resource
-        // return ....
+        return new DvdaudioResource($dvdaudio);
     }
 
     /**
@@ -76,32 +80,37 @@ class DvdaudioController extends Controller
     {
         // Request body berisi title, artist dan year
         $validator = Validator::make($request->all(), [
-            
+            'title' => 'sometimes|required|string|max:255',
+            'artist' => 'sometimes|nullable|string',
+            'year' => 'sometimes|required|integer|min:0',
         ]);
 
         // Cari data dvdaudio berdasarkan ID
-        // $dvdaudio = ....
+        $dvdaudio = dvdaudio::find($id);
 
         if (!$dvdaudio) {
             return response()->json([
-                // 'success' => false,
-                // 'message' => ....
+                'success' => false,
+                'message' => 'Dvdaudio not found'
             ], 404);
         }
 
 
         if ($validator->fails()) {
             return response()->json([
-                // 'success' => false,
-                // 'errors' => ....
+                'success' => false,
+                'errors' => 'please check your request'
             ], 422);
         }
 
         // Update data dvdaudio
-        // $dvdaudio->....
+        $dvdaudio->update($validator->validated());
 
         // return dvdaudio yang diupdate sebagai resource
-        // return ....
+        return (new DvdaudioResource($dvdaudio))
+                    ->additional(['message' => 'Dvdaudio updated succesfully'])
+                    ->response()
+                    ->setStatusCode(200);
     }
 
     /**
@@ -111,19 +120,19 @@ class DvdaudioController extends Controller
     public function destroy(string $id)
     {
         // Cari data dvdaudio berdasarkan ID
-        // $dvdaudio = ....
+        $dvdaudio = dvdaudio::find($id);
 
         if (!$dvdaudio) {
             return response()->json([
-                // 'success' => false,
-                // 'message' => ....
+                'success' => false,
+                'message' => 'Dvdaudio not found'
             ], 404);
         }
 
         // Hapus data dvdaudio
-        // $dvdaudio->....
+        $dvdaudio->delete();
 
         // return message sukses
-        // return ....
+        return response()->json(['message'=> 'Dvdaudio deleted succesfully'], 200);
     }
 }
